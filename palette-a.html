@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fun Travel — Option A</title>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:ital,wght@0,300;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:#fff;}
+
+/* SLIDESHOW BACKGROUND */
+.slides{position:fixed;inset:0;z-index:0;}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease;background-size:cover;background-position:center;}
+.slide.active{opacity:1;}
+.slide-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.7) 40%,rgba(255,92,53,0.15) 100%);}
+
+/* ANIMATED COLOR BARS — left side */
+.color-bars{position:fixed;left:0;top:0;bottom:0;width:8px;z-index:5;display:flex;flex-direction:column;}
+.bar{flex:1;animation:barPulse 2s ease-in-out infinite;}
+.bar:nth-child(1){background:#FF5C35;animation-delay:0s;}
+.bar:nth-child(2){background:#FFD600;animation-delay:0.3s;}
+.bar:nth-child(3){background:#4CAF50;animation-delay:0.6s;}
+.bar:nth-child(4){background:#FF5C35;animation-delay:0.9s;}
+.bar:nth-child(5){background:#FFD600;animation-delay:1.2s;}
+
+/* NAV */
+nav{position:fixed;top:0;left:8px;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:1.5rem 3rem;background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);}
+.nav-logo{font-family:'Abril Fatface',serif;font-size:1.6rem;color:#FF5C35;letter-spacing:-0.01em;}
+.nav-logo span{color:#1a1a1a;}
+.nav-enter{display:inline-block;padding:0.6rem 1.8rem;background:#FF5C35;color:white;text-decoration:none;font-size:0.78rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;border-radius:100px;transition:all 0.2s;}
+.nav-enter:hover{background:#e04a25;transform:scale(1.03);}
+
+/* HERO CONTENT */
+.hero{position:fixed;inset:0;left:8px;z-index:20;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 4rem;padding-top:80px;}
+.hero-left{padding-right:3rem;}
+.eyebrow{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:#FF5C35;margin-bottom:1.2rem;animation:slideRight 0.8s ease both;}
+h1{font-family:'Abril Fatface',serif;font-size:clamp(4rem,8vw,7.5rem);line-height:0.92;color:#1a1a1a;animation:slideRight 0.8s ease 0.15s both;}
+h1 .line2{color:#FF5C35;display:block;}
+.hero-desc{font-size:1rem;font-weight:300;color:#555;line-height:1.7;margin:1.5rem 0 2rem;max-width:380px;animation:slideRight 0.8s ease 0.3s both;}
+.cta-group{display:flex;gap:1rem;align-items:center;animation:slideRight 0.8s ease 0.45s both;}
+.btn-main{display:inline-block;padding:0.9rem 2.5rem;background:#FF5C35;color:white;text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;border-radius:100px;transition:all 0.2s;box-shadow:0 4px 20px rgba(255,92,53,0.35);}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,92,53,0.45);}
+.btn-sec{font-size:0.78rem;color:#888;text-decoration:none;letter-spacing:0.05em;border-bottom:1px solid #ddd;padding-bottom:2px;transition:color 0.2s;}
+.btn-sec:hover{color:#FF5C35;border-color:#FF5C35;}
+
+/* RIGHT SIDE — stacked photo mosaic */
+.hero-right{position:relative;height:70vh;animation:fadeIn 1s ease 0.3s both;}
+.photo-stack{position:relative;width:100%;height:100%;}
+.pimg{position:absolute;border-radius:12px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.18);}
+.pimg img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* TICKER */
+.ticker{position:fixed;bottom:0;left:8px;right:0;background:#FFD600;padding:0.55rem 0;z-index:50;overflow:hidden;white-space:nowrap;}
+.ticker-inner{display:inline-block;animation:ticker 20s linear infinite;font-size:0.75rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:#1a1a1a;}
+.ticker-inner span{margin:0 2rem;}
+.ticker-dot{color:#FF5C35;}
+
+/* PALETTE BADGE */
+.palette-badge{position:fixed;top:1.5rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#FFD600;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.35rem 1rem;border-radius:100px;z-index:100;}
+
+/* PHOTO COUNTER */
+.slide-dots{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:0.5rem;}
+.dot2{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,0.2);transition:all 0.3s;cursor:pointer;}
+.dot2.active{background:#FF5C35;transform:scale(1.4);}
+
+@keyframes slideRight{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes barPulse{0%,100%{opacity:1;transform:scaleX(1)}50%{opacity:0.6;transform:scaleX(0.6)}}
+</style>
+</head>
+<body>
+
+<div class="palette-badge">Option A — Tropical Fiesta</div>
+
+<!-- Slideshow bg -->
+<div class="slides" id="slides">
+  <div class="slide active" style="background-image:url('images/Resized_20260531_100359.jpeg')"><div class="slide-overlay"></div></div>
+  <div class="slide" style="background-image:url('images/Resized_20260301_063640_1_.jpeg')"><div class="slide-overlay"></div></div>
+  <div class="slide" style="background-image:url('images/Resized_20260531_100501.jpeg')"><div class="slide-overlay"></div></div>
+  <div class="slide" style="background-image:url('images/IMG_3530.jpeg')"><div class="slide-overlay"></div></div>
+  <div class="slide" style="background-image:url('images/Resized_20260529_085416.jpeg')"><div class="slide-overlay"></div></div>
+</div>
+
+<!-- Color bars -->
+<div class="color-bars">
+  <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  <div class="bar"></div><div class="bar"></div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">Fun<span>Travel</span></div>
+  <a href="index.html" class="nav-enter">Enter Shop →</a>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-left">
+    <p class="eyebrow">✦ Handmade in the USA · Est. 2026</p>
+    <h1>Made for<span class="line2">the Journey</span></h1>
+    <p class="hero-desc">Handcrafted beaded jewelry & colorful travel pillows. Affordable, unique, and built to travel with you.</p>
+    <div class="cta-group">
+      <a href="index.html" class="btn-main">Shop the Collection</a>
+      <a href="index.html#jewelry" class="btn-sec">View Jewelry →</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="photo-stack">
+      <div class="pimg" style="width:55%;height:52%;top:0;right:5%;"><img src="images/Resized_20260531_100501.jpeg" alt=""></div>
+      <div class="pimg" style="width:48%;height:45%;bottom:5%;left:0;"><img src="images/Resized_20260531_102515.jpeg" alt=""></div>
+      <div class="pimg" style="width:38%;height:38%;bottom:15%;right:0;"><img src="images/Resized_20260301_063640_1_.jpeg" alt=""></div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide dots -->
+<div class="slide-dots" id="dots"></div>
+
+<!-- Ticker -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Handmade Jewelry</span><span class="ticker-dot">✦</span><span>Travel Pillows</span><span class="ticker-dot">✦</span><span>Ships USA Only</span><span class="ticker-dot">✦</span><span>PayPal Accepted</span><span class="ticker-dot">✦</span><span>Made with Love</span><span class="ticker-dot">✦</span><span>Fun Travel</span><span class="ticker-dot">✦</span>
+    <span>Handmade Jewelry</span><span class="ticker-dot">✦</span><span>Travel Pillows</span><span class="ticker-dot">✦</span><span>Ships USA Only</span><span class="ticker-dot">✦</span><span>PayPal Accepted</span><span class="ticker-dot">✦</span><span>Made with Love</span><span class="ticker-dot">✦</span><span>Fun Travel</span><span class="ticker-dot">✦</span>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+let cur = 0;
+slides.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className='dot2'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n){
+  slides[cur].classList.remove('active');
+  document.querySelectorAll('.dot2')[cur].classList.remove('active');
+  cur=n;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.dot2')[cur].classList.add('active');
+}
+setInterval(()=>goTo((cur+1)%slides.length),4000);
+</script>
+
+<a href="index.html" style="position:fixed; bottom:1.5rem; left:1.5rem; z-index:200; background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); color:white; padding:0.6rem 1.2rem; border-radius:100px; font-size:0.75rem; font-weight:500; letter-spacing:0.1em; text-decoration:none; border:1px solid rgba(255,255,255,0.2); -webkit-tap-highlight-color:transparent; transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">← Back to Shop</a>
+
+</body>
+</html>
